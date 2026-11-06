@@ -9,15 +9,7 @@
 <body>
   <main class="wrap">
 
-    <header class="top">
-      <div>
-        <h1>LED Light</h1>
-        <p class="sub">{{ prefix }} · {{ broker }}</p>
-      </div>
-      <div class="status" id="status">
-        <span class="dot"></span><span id="status-text">Connecting…</span>
-      </div>
-    </header>
+{% include '_header.html' %}
 
     <!-- Live readings -->
     <section class="card">
@@ -108,6 +100,7 @@
     <p class="toast" id="toast" role="status"></p>
   </main>
 
-  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  <script src="{{ url_for('static', filename='common.js') }}"></script>
+  <script src="{{ url_for('static', filename='control.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LED Light Logs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="wrap">
+
+{% include '_header.html' %}
+
+    <div class="toolbar">
+      <div class="seg seg-range" id="range">
+        <button data-min="5">5 min</button>
+        <button data-min="30" class="active">30 min</button>
+        <button data-min="120">2 hours</button>
+        <button data-min="0">All</button>
+      </div>
+      <span class="muted" id="range-note"></span>
+    </div>
+
+    <!-- Summary -->
+    <section class="stats">
+      <div class="stat"><div class="label">Recorded</div><div class="stat-v" id="st-time">–</div><div class="hint" id="st-samples">&nbsp;</div></div>
+      <div class="stat"><div class="label">Avg sound level</div><div class="stat-v" id="st-avg">–</div><div class="hint" id="st-peak">&nbsp;</div></div>
+      <div class="stat"><div class="label">Music playing</div><div class="stat-v" id="st-music">–</div><div class="hint">of recorded time</div></div>
+      <div class="stat"><div class="label">Commands sent</div><div class="stat-v" id="st-cmd">–</div><div class="hint" id="st-conf">&nbsp;</div></div>
+      <div class="stat"><div class="label">Avg response</div><div class="stat-v" id="st-lat">–</div><div class="hint" id="st-latrange">command to light confirm</div></div>
+    </section>
+
+    <!-- Level history -->
+    <section class="card">
+      <div class="card-head">
+        <h2>Sound level</h2>
+        <span class="legend"><i class="lg-line"></i>Level <i class="lg-band"></i>Music playing</span>
+      </div>
+      <div class="chart" id="chart">
+        <svg id="chart-svg" role="img" aria-label="Sound level over time"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="strip-label hint">Screen color over time</div>
+      <div class="strip" id="strip"></div>
+      <div class="axis" id="axis"></div>
+      <p class="empty hint" id="chart-empty" hidden>No readings in this range yet. Readings are recorded while the light is online.</p>
+    </section>
+
+    <!-- Mode share -->
+    <section class="card">
+      <div class="card-head"><h2>Time in each mode</h2></div>
+      <div class="share" id="share"></div>
+      <div class="share-legend" id="share-legend"></div>
+    </section>
+
+    <!-- Event log -->
+    <section class="card">
+      <div class="card-head">
+        <h2>Event log</h2>
+        <div class="seg seg-small" id="filter">
+          <button data-kind="" class="active">All</button>
+          <button data-kind="command">Commands</button>
+          <button data-kind="light">Light</button>
+          <button data-kind="system">System</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="log">
+          <thead><tr><th>Time</th><th>Type</th><th>Event</th><th>Detail</th></tr></thead>
+          <tbody id="log-body"></tbody>
+        </table>
+      </div>
+      <p class="empty hint" id="log-empty" hidden>No events yet.</p>
+    </section>
+
+    <div class="actions">
+      <a class="btn btn-quiet" href="/api/logs/readings.csv">Download readings CSV</a>
+      <a class="btn btn-quiet" href="/api/logs/events.csv">Download events CSV</a>
+      <button class="btn btn-danger" id="clear">Clear logs</button>
+    </div>
+
+    <p class="toast" id="toast" role="status"></p>
+  </main>
+
+  <script src="{{ url_for('static', filename='common.js') }}"></script>
+  <script src="{{ url_for('static', filename='logs.js') }}"></script>
+</body>
+</html>

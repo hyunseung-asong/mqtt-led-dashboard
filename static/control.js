@@ -1,15 +1,10 @@
-// LED Light dashboard: live updates over Server-Sent Events, commands via POST.
+// Control page: live readings and controls. Needs common.js.
 
-const $ = (id) => document.getElementById(id);
 const DARK_LUX = 150;          // same threshold as the firmware
-const STALE_MS = 3000;         // device publishes every 0.5 s
 const MODE_NAMES = {
   static: "Static", rainbow: "Rainbow", color: "Screen color",
   volume: "Volume", ambientvol: "Screen + volume", off: "Off",
 };
-
-let s = {};                    // latest known state
-let lastSeenLocal = 0;         // browser time of the last device message
 
 // ---------------------------------------------------------------- render
 function render() {
@@ -33,8 +28,6 @@ function render() {
   setActive("mode", s.state);
   setActive("power", s.power_state);
   if (s.breathe_state) $("breathe").checked = s.breathe_state === "on";
-
-  renderStatus();
 }
 
 function setActive(topic, value) {
@@ -43,27 +36,7 @@ function setActive(topic, value) {
     b.classList.toggle("active", b.dataset.value === value));
 }
 
-function renderStatus() {
-  const el = $("status"), txt = $("status-text");
-  el.className = "status";
-  if (!s.connected) { el.classList.add("offline"); txt.textContent = "Broker offline"; }
-  else if (Date.now() - lastSeenLocal < STALE_MS) { el.classList.add("online"); txt.textContent = "Light online"; }
-  else { el.classList.add("idle"); txt.textContent = "Waiting for light"; }
-}
-setInterval(renderStatus, 1000);
-
-// ---------------------------------------------------------------- live stream
-function connect() {
-  const es = new EventSource("/events");
-  es.onmessage = (e) => {
-    const u = JSON.parse(e.data);
-    if ("level" in u || "ambient" in u || "lux" in u) lastSeenLocal = Date.now();
-    Object.assign(s, u);
-    render();
-  };
-  es.onerror = () => { s.connected = false; renderStatus(); }; // EventSource retries itself
-}
-connect();
+stateHandlers.push(render);
 
 // ---------------------------------------------------------------- commands
 async function send(topic, value) {
@@ -80,15 +53,6 @@ async function send(topic, value) {
     toast("Not sent: " + err.message);
     return false;
   }
-}
-
-let toastTimer;
-function toast(msg) {
-  const t = $("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 }
 
 // segmented buttons (mode, power)

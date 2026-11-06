@@ -7,7 +7,7 @@ Node-RED dashboard (both can be open at once).
 ## Run it
 
 ```bash
-cd flask-dashboard
+cd mqtt-led-dashboard
 python -m venv .venv
 # Windows: .venv\Scripts\activate     macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
@@ -37,6 +37,34 @@ is silent, and **Broker offline** when the server lost the broker.
 Switching to **Wall adapter** asks for confirmation, since it lifts the
 brightness cap from 40 to 255.
 
+## Logs page
+
+Everything the app sees is recorded while it runs, in `logs/` next to `app.py`:
+
+- `logs/ledlight.db` (SQLite) has two tables. `readings` gets one row per level
+  message (about 2 per second) with level, lux, screen color, music and mode.
+  `events` gets every command you send, every change the light reports, and
+  system events (broker connected or lost, light online or silent).
+- `logs/app.log` is the same events as plain text (also printed in the terminal).
+
+Open the **Logs** tab (http://localhost:5000/logs) to see:
+
+- **Summary** for the chosen range (5 min, 30 min, 2 hours, All): recorded time,
+  average and peak sound level, share of time music was playing, commands sent,
+  and average response time.
+- **Sound level chart** with music-playing periods shaded and a strip of the
+  sensed screen color underneath. Hover for exact values.
+- **Time in each mode** as a bar.
+- **Event log**, updating live, filterable by Commands, Light or System.
+- **Download readings CSV / events CSV**, and **Clear logs** to start fresh
+  (for example right before a demo).
+
+**Response time** is measured from the moment the dashboard publishes a mode,
+power or breathe command until the light publishes the matching state back
+through the broker. It's the full round trip (laptop → broker → light →
+broker → laptop), so it's a good number for the Results slide. Color has no
+echo from the light, so it isn't timed.
+
 ## Settings (optional environment variables)
 
 | Variable | Default |
@@ -63,9 +91,14 @@ brightness cap from 40 to 255.
 ## Files
 
 ```
-app.py               Flask server + MQTT client
-templates/index.html page layout
-static/style.css     styling (follows the system light/dark setting)
-static/app.js        live updates and controls
+app.py                Flask server, MQTT client, SQLite logging
+templates/_header.html  title, status and tabs shared by both pages
+templates/index.html  Control page
+templates/logs.html   Logs page
+static/common.js      live stream and status shared by both pages
+static/control.js     Control page controls
+static/logs.js        Logs page chart, stats and event log
+static/style.css      styling (follows the system light/dark setting)
+logs/                 created on first run: ledlight.db, app.log
 requirements.txt
 ```

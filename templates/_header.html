@@ -1,0 +1,13 @@
+    <header class="top">
+      <div>
+        <h1>LED Light</h1>
+        <p class="sub">{{ prefix }} · {{ broker }}</p>
+      </div>
+      <div class="status" id="status">
+        <span class="dot"></span><span id="status-text">Connecting…</span>
+      </div>
+    </header>
+    <nav class="tabs">
+      <a href="/" class="{{ 'active' if page == 'control' }}">Control</a>
+      <a href="/logs" class="{{ 'active' if page == 'logs' }}">Logs</a>
+    </nav>
