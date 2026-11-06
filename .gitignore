@@ -1,3 +1,4 @@
 .venv/
 __pycache__/
 logs/
+xiao_esp32c3_sketch/secrets.h
