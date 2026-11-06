@@ -24,7 +24,6 @@ Open http://localhost:5000. To use it from your phone on the same Wi-Fi, open
 | Sound level bar | `level` (0-100) | light → dashboard |
 | Screen color swatch | `ambient` (#RRGGBB) | light → dashboard |
 | Light reading (dark under 150) | `lux` | light → dashboard |
-| Music pill | `music` (playing / stopped) | light → dashboard |
 | Mode buttons | sends `mode`, shows `state` | both |
 | Power (USB / Wall adapter) | sends `power`, shows `power/state` | both |
 | Breathe switch | sends `breathe`, shows `breathe/state` | both |
@@ -42,7 +41,7 @@ brightness cap from 40 to 255.
 Everything the app sees is recorded while it runs, in `logs/` next to `app.py`:
 
 - `logs/ledlight.db` (SQLite) has two tables. `readings` gets one row per level
-  message (about 2 per second) with level, lux, screen color, music and mode.
+  message (about 2 per second) with level, lux, screen color and mode.
   `events` gets every command you send, every change the light reports, and
   system events (broker connected or lost, light online or silent).
 - `logs/app.log` is the same events as plain text (also printed in the terminal).
@@ -50,10 +49,8 @@ Everything the app sees is recorded while it runs, in `logs/` next to `app.py`:
 Open the **Logs** tab (http://localhost:5000/logs) to see:
 
 - **Summary** for the chosen range (5 min, 30 min, 2 hours, All): recorded time,
-  average and peak sound level, share of time music was playing, commands sent,
-  and average response time.
-- **Sound level chart** with music-playing periods shaded and a strip of the
-  sensed screen color underneath. Hover for exact values.
+  average and peak sound level, commands sent, and average response time.
+- **Sound level chart** with a strip of the sensed screen color underneath. Hover for exact values.
 - **Time in each mode** as a bar.
 - **Event log**, updating live, filterable by Commands, Light or System.
 - **Download readings CSV / events CSV**, and **Clear logs** to start fresh

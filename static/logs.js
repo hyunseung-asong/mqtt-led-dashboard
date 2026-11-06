@@ -42,7 +42,6 @@ async function loadStats() {
   $("st-samples").textContent = st.samples ? `${st.samples.toLocaleString()} readings` : "no readings";
   $("st-avg").textContent = st.avg_level ?? "–";
   $("st-peak").textContent = st.peak_level != null ? `peak ${st.peak_level}` : " ";
-  $("st-music").textContent = st.music_pct != null ? st.music_pct + "%" : "–";
   $("st-cmd").textContent = st.commands;
   $("st-conf").textContent = st.commands ? `${st.confirmed} confirmed by light` : " ";
   $("st-lat").textContent = st.avg_latency != null ? st.avg_latency + " ms" : "–";
@@ -92,21 +91,7 @@ function drawChart() {
     t.textContent = v; svg.appendChild(t);
   });
 
-  // music bands
-  const bw = Math.max(1, x(t0 + chartData.bucket) - x(t0));
-  let bandStart = null, last = null;
-  const endBand = () => {
-    if (bandStart === null) return;
-    svg.appendChild(el("rect", { x: x(bandStart), y: T, width: Math.max(1, x(last) + bw - x(bandStart)), height: H - T - B, class: "band" }));
-    bandStart = null;
-  };
-  pts.forEach((p) => {
-    if (p.music && bandStart !== null && p.t - last > gap) endBand();
-    if (p.music && bandStart === null) bandStart = p.t;
-    if (!p.music) endBand();
-    last = p.t;
-  });
-  endBand();
+  const bw = Math.max(1, x(t0 + chartData.bucket) - x(t0));   // width of one bucket
 
   // level area + line, split at gaps
   let line = "", area = "", runStart = null, prev = null;
@@ -157,7 +142,6 @@ $("chart").addEventListener("mousemove", (e) => {
   const c = $("cursor"); c.setAttribute("x1", px); c.setAttribute("x2", px); c.style.opacity = 1;
   const tip = $("tip");
   tip.innerHTML = `<b>${clock(best.t)}</b> · level ${best.level} (peak ${best.peak})` +
-    (best.music ? " · music" : "") +
     (best.ambient ? ` <i style="background:${best.ambient}"></i>` : "");
   tip.style.opacity = 1;
   tip.style.left = Math.min(Math.max(px, 90), r.width - 90) + "px";

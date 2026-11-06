@@ -64,8 +64,6 @@ h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacin
 .meter-fill { height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width .35s ease; }
 .swatch-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
 .swatch { width: 40px; height: 40px; border-radius: 10px; background: var(--seg); border: 1px solid var(--line); transition: background .4s ease; }
-.pill { font-size: 12.5px; padding: 3px 10px; border-radius: 999px; background: var(--seg); color: var(--muted); }
-.pill.on { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
 
 /* segmented controls */
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; background: var(--seg); padding: 4px; border-radius: 11px; }
@@ -121,7 +119,7 @@ input[type=color]::-webkit-color-swatch { border: 0; border-radius: 6px; }
 .seg-range { display: inline-grid; }
 .seg-range button, .seg-small button { padding: 6px 12px; font-size: 13px; }
 .seg-small { display: inline-grid; padding: 3px; }
-.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
 .stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; min-width: 0; }
 .stat-v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin: 2px 0; white-space: nowrap; }
 
@@ -129,12 +127,10 @@ input[type=color]::-webkit-color-swatch { border: 0; border-radius: 6px; }
 .legend { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
 .legend i { display: inline-block; margin-left: 8px; }
 .lg-line { width: 14px; height: 2px; background: var(--accent); }
-.lg-band { width: 12px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--ok) 18%, transparent); }
 .chart { position: relative; }
 #chart-svg { display: block; width: 100%; height: 180px; overflow: visible; }
 #chart-svg .grid { stroke: var(--line); stroke-width: 1; }
 #chart-svg .ylab { fill: var(--muted); font-size: 11px; }
-#chart-svg .band { fill: color-mix(in srgb, var(--ok) 14%, transparent); }
 #chart-svg .area { fill: color-mix(in srgb, var(--accent) 14%, transparent); }
 #chart-svg .line { fill: none; stroke: var(--accent); stroke-width: 1.75; stroke-linejoin: round; }
 #chart-svg .cursor { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; }
@@ -184,6 +180,5 @@ a.btn { display: inline-flex; align-items: center; text-decoration: none; }
   .grid-2 { grid-template-columns: 1fr; }
   .seg-modes { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: 1fr 1fr; }
-  .stat:last-child { grid-column: 1 / -1; }
   .btn-danger { margin-left: 0; }
 }

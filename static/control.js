@@ -20,9 +20,6 @@ function render() {
     $("lux").textContent = s.lux;
     $("lux-hint").textContent = s.lux < DARK_LUX ? "Dark, sensor reads as black" : " ";
   }
-  const playing = s.music === "playing";
-  $("music").textContent = playing ? "Music playing" : "Music stopped";
-  $("music").classList.toggle("on", playing);
 
   if (s.state) $("state-text").textContent = "Now: " + (MODE_NAMES[s.state] || s.state);
   setActive("mode", s.state);

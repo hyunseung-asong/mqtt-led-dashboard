@@ -8,7 +8,7 @@ Server-Sent Events (/events). Controls in the page POST to /api/command,
 and the server publishes them to the device's command topics.
 
 Everything is also recorded in logs/ledlight.db (SQLite):
-  readings  one row per level message (~2/s): level, lux, ambient, music, mode
+  readings  one row per level message (~2/s): level, lux, ambient, mode
   events    commands sent, light state changes (with response time), system events
 A text log is written to logs/app.log. The Logs page (/logs) shows both.
 
@@ -50,9 +50,8 @@ STATUS_TOPICS = [
     "state",         # retained: static|rainbow|color|volume|ambientvol|off
     "power/state",   # retained: usb|wall
     "breathe/state", # retained: on|off
-    "music",         # retained: playing|stopped
 ]
-STATE_KEYS = ("state", "power_state", "breathe_state", "music")
+STATE_KEYS = ("state", "power_state", "breathe_state")
 
 # Commands the device accepts: topic -> allowed payloads (None = validated below)
 COMMANDS = {
@@ -82,7 +81,7 @@ db.row_factory = sqlite3.Row
 db.executescript("""
 PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS readings (
-    ts REAL NOT NULL, level INTEGER, lux INTEGER, ambient TEXT, music TEXT, state TEXT);
+    ts REAL NOT NULL, level INTEGER, lux INTEGER, ambient TEXT, state TEXT);
 CREATE INDEX IF NOT EXISTS readings_ts ON readings(ts);
 CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT, ts REAL NOT NULL,
@@ -185,8 +184,8 @@ def on_message(client, userdata, msg):
             record_event("system", "light", "online", "readings arriving")
         with state_lock:
             row = (now, payload, latest.get("lux"), latest.get("ambient"),
-                   latest.get("music"), latest.get("state"))
-        db_exec("INSERT INTO readings (ts, level, lux, ambient, music, state) VALUES (?,?,?,?,?,?)", row)
+                   latest.get("state"))
+        db_exec("INSERT INTO readings (ts, level, lux, ambient, state) VALUES (?,?,?,?,?)", row)
 
     elif key in STATE_KEYS and payload != previous:
         detail, latency = ("retained value" if msg.retain else ""), None
@@ -297,8 +296,7 @@ def api_readings():
     bucket = max(0.5, (time.time() - start) / 300)
     rows = db_query("""
         SELECT CAST(ts / ? AS INTEGER) * ? AS t, ROUND(AVG(level), 1) AS level,
-               MAX(level) AS peak, ROUND(AVG(lux)) AS lux,
-               MAX(music = 'playing') AS music, ambient
+               MAX(level) AS peak, ROUND(AVG(lux)) AS lux, ambient
         FROM readings WHERE ts >= ? GROUP BY CAST(ts / ? AS INTEGER) ORDER BY t
     """, (bucket, bucket, t0, bucket))
     return jsonify(bucket=bucket, start=start, end=time.time(), points=rows)
@@ -309,7 +307,7 @@ def api_stats():
     t0 = since(float(request.args.get("minutes", 10)))
     r = db_query("""
         SELECT COUNT(*) n, ROUND(AVG(level), 1) avg_level, MAX(level) peak_level,
-               ROUND(AVG(lux)) avg_lux, SUM(music = 'playing') music_n,
+               ROUND(AVG(lux)) avg_lux,
                MIN(ts) first_ts, MAX(ts) last_ts
         FROM readings WHERE ts >= ?""", (t0,))[0]
     modes = db_query("""SELECT COALESCE(state, 'unknown') state, COUNT(*) n
@@ -323,7 +321,6 @@ def api_stats():
     return jsonify(
         samples=n,
         avg_level=r["avg_level"], peak_level=r["peak_level"], avg_lux=r["avg_lux"],
-        music_pct=round(100 * (r["music_n"] or 0) / n, 1) if n else None,
         first_ts=r["first_ts"], last_ts=r["last_ts"],
         modes=[{"state": m["state"], "pct": round(100 * m["n"] / n, 1)} for m in modes] if n else [],
         commands=c["commands"] or 0, confirmed=c["confirmed"] or 0,
@@ -345,7 +342,7 @@ def csv_response(rows, columns, filename):
 @app.route("/api/logs/readings.csv")
 def export_readings():
     rows = db_query("SELECT * FROM readings ORDER BY ts")
-    return csv_response(rows, ["level", "lux", "ambient", "music", "state"], "readings.csv")
+    return csv_response(rows, ["level", "lux", "ambient", "state"], "readings.csv")
 
 
 @app.route("/api/logs/events.csv")
