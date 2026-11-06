@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LED Light</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="wrap">
+
+    <header class="top">
+      <div>
+        <h1>LED Light</h1>
+        <p class="sub">{{ prefix }} · {{ broker }}</p>
+      </div>
+      <div class="status" id="status">
+        <span class="dot"></span><span id="status-text">Connecting…</span>
+      </div>
+    </header>
+
+    <!-- Live readings -->
+    <section class="card">
+      <div class="card-head">
+        <h2>Live</h2>
+        <span class="pill" id="music">Music stopped</span>
+      </div>
+
+      <div class="readings">
+        <div class="reading reading-level">
+          <div class="label">Sound level</div>
+          <div class="value"><span id="level">–</span><small>%</small></div>
+          <div class="meter"><div class="meter-fill" id="level-bar"></div></div>
+        </div>
+
+        <div class="reading">
+          <div class="label">Screen color</div>
+          <div class="swatch-row">
+            <div class="swatch" id="ambient-swatch"></div>
+            <span class="mono" id="ambient">–</span>
+          </div>
+        </div>
+
+        <div class="reading">
+          <div class="label">Light (raw clear)</div>
+          <div class="value"><span id="lux">–</span></div>
+          <div class="hint" id="lux-hint">&nbsp;</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mode -->
+    <section class="card">
+      <div class="card-head">
+        <h2>Mode</h2>
+        <span class="muted" id="state-text">–</span>
+      </div>
+      <div class="seg seg-modes" data-topic="mode" data-key="state">
+        <button data-value="static">Static</button>
+        <button data-value="rainbow">Rainbow</button>
+        <button data-value="color">Screen color</button>
+        <button data-value="volume">Volume</button>
+        <button data-value="ambientvol">Screen + volume</button>
+        <button data-value="off">Off</button>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <!-- Color -->
+      <section class="card">
+        <div class="card-head"><h2>Static color</h2></div>
+        <div class="color-row">
+          <input type="color" id="color-picker" value="#3A7BFF" aria-label="Pick color">
+          <input type="text" id="color-hex" value="#3A7BFF" maxlength="7" spellcheck="false" class="mono" aria-label="Hex color">
+          <button class="btn" id="color-apply">Apply</button>
+        </div>
+        <div class="presets" id="presets">
+          <button style="--c:#FFFFFF" data-c="#FFFFFF" aria-label="White"></button>
+          <button style="--c:#FFB46B" data-c="#FFB46B" aria-label="Warm white"></button>
+          <button style="--c:#FF3B30" data-c="#FF3B30" aria-label="Red"></button>
+          <button style="--c:#FF9500" data-c="#FF9500" aria-label="Orange"></button>
+          <button style="--c:#34C759" data-c="#34C759" aria-label="Green"></button>
+          <button style="--c:#3A7BFF" data-c="#3A7BFF" aria-label="Blue"></button>
+          <button style="--c:#AF52DE" data-c="#AF52DE" aria-label="Purple"></button>
+        </div>
+        <label class="switch-row">
+          <span>
+            <span class="switch-title">Breathe</span>
+            <span class="hint">Slow pulse in static mode</span>
+          </span>
+          <input type="checkbox" id="breathe" class="switch">
+        </label>
+      </section>
+
+      <!-- Power -->
+      <section class="card">
+        <div class="card-head"><h2>Power</h2></div>
+        <div class="seg" data-topic="power" data-key="power_state">
+          <button data-value="usb">USB</button>
+          <button data-value="wall">Wall adapter</button>
+        </div>
+        <p class="hint power-note" id="power-note">
+          USB caps brightness at 40/255 (400 mA). Use Wall only on the 5 V 4 A adapter.
+        </p>
+      </section>
+    </div>
+
+    <p class="toast" id="toast" role="status"></p>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
